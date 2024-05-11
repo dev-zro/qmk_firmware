@@ -54,7 +54,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
            KC_TRNS, KC_NO,   CH_7,    CH_8,    CH_9,    KC_LGUI,     KC_HOME, KC_PGDN, KC_PGUP, KC_END,  KC_INS,  KC_TRNS,
         //├────────┼────────┼────────┼────────┼────────┼────────┤   ├────────┼────────┼────────┼────────┼────────┼────────┤
         //│        │  0     │  4     │  5     │  6     │        │   │ LEFT   │ DOWN   │ UP     │ RIGHT  │ DELETE │        │
-           KC_TRNS, CH_0,    CH_4,    CH_5,    CH_6,    KC_NO,       KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_DEL,  KC_TRNS,
+           KC_TRNS, CH_0,    CH_4,    CH_5,    CH_6,    CW_TOGG,     KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_DEL,  KC_TRNS,
         //├────────┼────────┼────────┼────────┼────────┼────────┤   ├────────┼────────┼────────┼────────┼────────┼────────┤
         //│        │        │  1     │  2     │  3     │ LOCK   │   │        │  ä     │  ö     │  ü     │  ñ     │        │
            KC_TRNS, KC_NO,   CH_1,    CH_2,    CH_3,    KC_LOCK,     KC_NO,   CH_ADIA, CH_ODIA, CH_UDIA, KC_ENYA, KC_TRNS,
