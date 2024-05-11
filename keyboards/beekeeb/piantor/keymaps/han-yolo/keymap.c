@@ -9,6 +9,7 @@
 #include "action_util.h"
 #include "os_detection.h"
 #include "unicode.h"
+#include "led.h"
 
 #include "keymap_swiss_de.h"
 #include "sendstring_swiss_de.h"
@@ -100,6 +101,13 @@ void keyboard_post_init_user(void) {
     }
 }
 
+bool led_update_user(led_t led_state) {
+	if (!led_state.num_lock) {
+		tap_code(KC_NUM_LOCK);
+	}
+	return true;
+}
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     bool process_normal = true;
     switch (keycode) {
@@ -146,9 +154,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 if (os == OS_LINUX) {
                     register_unicode(0x00BF);
                 } else if (os == OS_WINDOWS) {
-                    SEND_STRING(SS_ALGR(SS_TAP(X_P0) SS_TAP(X_P1) SS_TAP(X_P9) SS_TAP(X_P1)));
+                    SEND_STRING(SS_LALT(SS_TAP(X_KP_0) SS_TAP(X_KP_1) SS_TAP(X_KP_9) SS_TAP(X_KP_1)));
                 } else {
-                    process_normal = false;
+                    process_normal = true;
                 }
             }
             break;
@@ -159,9 +167,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 if (os == OS_LINUX) {
                     register_unicode(0x00A1);
                 } else if (os == OS_WINDOWS) {
-                    SEND_STRING(SS_ALGR(SS_TAP(X_P0) SS_TAP(X_P1) SS_TAP(X_P6) SS_TAP(X_P1)));
+                    SEND_STRING(SS_LALT(SS_TAP(X_KP_0) SS_TAP(X_KP_1) SS_TAP(X_KP_6) SS_TAP(X_KP_1)));
                 } else {
-                    process_normal = false;
+                    process_normal = true;
                 }
             }
             break;
