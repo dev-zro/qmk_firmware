@@ -1,0 +1,14 @@
+-Istdint.h
+-Istddef.h
+-Iplatforms
+-Iquantum
+-Iquantum/keymap_extras
+-Iquantum/process_keycode
+-Iquantum/send_string
+-Iquantum/sequencer
+-Iquantum/unicode
+-Itmk_core/protocol
+-DQMK_KEYBOARD_H=<stdint.h>
+-DMATRIX_ROWS=4
+-DMATRIX_COLS=18
+-DLAYOUT_split_3x6_3
