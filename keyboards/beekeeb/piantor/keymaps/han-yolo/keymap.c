@@ -10,6 +10,8 @@
 #include "os_detection.h"
 #include "unicode.h"
 #include "led.h"
+#include "chibios/gpio.h"
+#include "chibios/vendors/RP/_pin_defs.h"
 
 #include "keymap_swiss_de.h"
 #include "sendstring_swiss_de.h"
@@ -24,6 +26,16 @@
 #define KC_INVQ 0x00E9
 #define KC_INVE 0x00EA
 
+
+enum unicode_names {
+    SNK,
+    TMB
+};
+
+const uint32_t PROGMEM unicode_map[] = {
+    [SNK]  = 0x1F40D, // 🐍
+    [TMB]  = 0x1F44D, // 👍
+};
 
 const key_override_t slash_shift_override = ko_make_basic(MOD_MASK_SHIFT, CH_SLSH, CH_BSLS);
 
@@ -65,7 +77,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [2] = LAYOUT_split_3x6_3(
         //╭────────┬────────┬────────┬────────┬────────┬────────╮   ╭────────┬────────┬────────┬────────┬────────┬────────╮
         //│        │  °     │  ?     │  {     │  }     │  ¿     │   │  ^     │  (     │  )     │  $     │        │        │
-           KC_TRNS, CH_DEG,  CH_QUES, CH_LCBR, CH_RCBR, KC_INVQ,     CH_CIRC, CH_LPRN, CH_RPRN, CH_DLR,  KC_NO,   KC_TRNS,
+           KC_TRNS, CH_DEG,  CH_QUES, CH_LCBR, CH_RCBR, KC_INVQ,     CH_CIRC, CH_LPRN, CH_RPRN, CH_DLR,  UM(TMB), KC_TRNS,
         //├────────┼────────┼────────┼────────┼────────┼────────┤   ├────────┼────────┼────────┼────────┼────────┼────────┤
         //│        │  |     │  @     │  &     │  #     │  %     │   │  +     │  *     │  =     │  '     │  "     │        │
            KC_TRNS, CH_PIPE, CH_AT,   CH_AMPR, CH_HASH, CH_PERC,     CH_PLUS, CH_ASTR, CH_EQL,  CH_QUOT, CH_DQUO, KC_TRNS,
@@ -79,7 +91,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [3] = LAYOUT_split_3x6_3(
         //╭────────┬────────┬────────┬────────┬────────┬────────╮   ╭────────┬────────┬────────┬────────┬────────┬────────╮
         //│        │        │ F7     │ F8     │ F9     │ F10    │   │        │ DARK   │ BRIGHT │        │        │        │
-           KC_TRNS, KC_NO,   KC_F7,   KC_F8,   KC_F9,   KC_F10,      KC_NO,   KC_BRID, KC_BRIU, KC_NO,   KC_NO,   KC_TRNS,
+           KC_TRNS, UM(SNK), KC_F7,   KC_F8,   KC_F9,   KC_F10,      KC_NO,   KC_BRID, KC_BRIU, KC_NO,   KC_NO,   KC_TRNS,
         //├────────┼────────┼────────┼────────┼────────┼────────┤   ├────────┼────────┼────────┼────────┼────────┼────────┤
         //│        │        │ F4     │ F5     │ F6     │ F11    │   │ LEFT   │ DOWN   │ UP     │ RIGHT  │        │        │
            KC_TRNS, KC_NO,   KC_F4,   KC_F5,   KC_F6,   KC_F11,      KC_MPRV, KC_VOLD, KC_VOLU, KC_MNXT, KC_NO,   KC_TRNS,
@@ -92,6 +104,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 };
 
+layer_state_t layer_state_set_user(layer_state_t state) {
+   return update_tri_layer_state(state, 1, 2, 3);
+}
+
 void keyboard_post_init_user(void) {
     os_variant_t os = detected_host_os();
     if (os == OS_LINUX) {
@@ -99,6 +115,8 @@ void keyboard_post_init_user(void) {
     } else if (os == OS_WINDOWS) {
         set_unicode_input_mode(UNICODE_MODE_WINDOWS);
     }
+    gpio_set_pin_output_push_pull(GP25);
+    gpio_set_pin_input(GP23);
 }
 
 bool led_update_user(led_t led_state) {
@@ -106,6 +124,30 @@ bool led_update_user(led_t led_state) {
 		tap_code(KC_NUM_LOCK);
 	}
 	return true;
+}
+
+void caps_word_set_user(bool active) {
+    gpio_write_pin(GP25, active);
+}
+
+bool caps_word_press_user(uint16_t keycode) {
+    switch (keycode) {
+        // Keycodes that continue Caps Word, with shift applied.
+        case KC_A ... KC_Z:
+        case CH_MINS:
+            add_weak_mods(MOD_BIT(KC_LSFT));  // Apply shift to next key.
+            return true;
+
+        // Keycodes that continue Caps Word, without shifting.
+        case CH_1 ... CH_0:
+        case KC_BSPC:
+        case KC_DEL:
+        case CH_UNDS:
+            return true;
+
+        default:
+            return false;  // Deactivate Caps Word.
+    }
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
