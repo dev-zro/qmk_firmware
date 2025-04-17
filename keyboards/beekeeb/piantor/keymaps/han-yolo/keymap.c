@@ -42,10 +42,9 @@ const key_override_t slash_shift_override = ko_make_basic(MOD_MASK_SHIFT, CH_SLS
 const key_override_t backspace_shift_override = ko_make_basic(MOD_MASK_SHIFT, KC_BSPC, KC_DEL);
 
 // This globally defines all key overrides to be used
-const key_override_t **key_overrides = (const key_override_t *[]){
+const key_override_t *key_overrides[] = {
     &slash_shift_override,
-    &backspace_shift_override,
-    NULL // Null terminate the array of overrides!
+    &backspace_shift_override
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
