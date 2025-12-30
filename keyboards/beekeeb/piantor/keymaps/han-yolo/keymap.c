@@ -10,13 +10,26 @@
 #include "action_util.h"
 #include "os_detection.h"
 #include "unicode.h"
+#include "gpio.h"
 #include "led.h"
-#include "chibios/gpio.h"
-#include "chibios/vendors/RP/_pin_defs.h"
 
 #include "keymap_swiss_de.h"
 #include "sendstring_swiss_de.h"
 
+// #include "chibios/gpio.h"
+// #include "chibios/vendors/RP/_pin_defs.h"
+
+#ifndef gpio_set_pin_output_push_pull
+#define gpio_set_pin_output_push_pull(pin)
+#endif
+
+#ifndef gpio_set_pin_input
+#define gpio_set_pin_input(pin)
+#endif
+
+#ifndef gpio_write_pin
+#define gpio_write_pin(pin, level)
+#endif
 
 #define ENT_L1 LT(1, KC_ENT)
 #define TAB_L2 LT(2, KC_TAB)
@@ -122,10 +135,10 @@ void keyboard_post_init_user(void) {
 }
 
 bool led_update_user(led_t led_state) {
-	if (!led_state.num_lock) {
-		tap_code(KC_NUM_LOCK);
-	}
-	return true;
+    if (!led_state.num_lock) {
+        tap_code(KC_NUM_LOCK);
+    }
+    return true;
 }
 
 void caps_word_set_user(bool active) {
